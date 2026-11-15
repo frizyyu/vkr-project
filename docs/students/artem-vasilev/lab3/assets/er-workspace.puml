@@ -1,0 +1,68 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam linetype ortho
+hide circle
+title Рабочая область — логическая ER-модель
+entity "Пользователь (User)" as U {
+* user_id : UUID <<PK>>
+--
+язык; тема; настройки уведомлений
+revision; created_at; updated_at
+}
+entity "Рабочая область (Workspace)" as W {
+* workspace_id : UUID <<PK>>
+* owner_id : UUID <<FK User>>
+--
+название
+revision; created_at; updated_at
+}
+entity "Раскладка (Layout)" as L {
+* layout_id : UUID <<PK>>
+* workspace_id : UUID <<FK Workspace>>
+* owner_id : UUID <<FK User>>
+--
+актив; таймфрейм; viewport; настройки
+mode : live / replay; cutoff : время?
+видимость автоматических слоёв
+revision; created_at; updated_at
+}
+entity "Группа рисунков (Group)" as G {
+* group_id : UUID <<PK>>
+* layout_id : UUID <<FK Layout>>
+* owner_id : UUID <<FK User>>
+--
+название; скрыта; заблокирована
+revision; created_at; updated_at
+}
+entity "Рисунок (Drawing)" as D {
+* drawing_id : UUID <<PK>>
+* layout_id : UUID <<FK Layout>>
+* owner_id : UUID <<FK User>>
+group_id : UUID? <<FK Group>>
+--
+тип; координаты времени / цены; стиль
+скрыт; заблокирован; порядок
+revision; created_at; updated_at
+}
+U ||--o{ W : владеет
+W ||--o{ L : содержит
+L ||--o{ G : объединяет
+L ||--o{ D : сохраняет
+G |o--o{ D : включает
+note bottom of D
+Группа и рисунок принадлежат одной раскладке и владельцу.
+Доступ ко всем сущностям сервер проверяет по owner_id.
+Автоматическая SMC-разметка — не Drawing: пользователь её не редактирует.
+end note
+legend bottom
+Логический состав сохраняемых данных, не физическая схема БД и не список API.
+mode / cutoff задаются раскладкой и наследуются её группами и рисунками.
+revision — проверка конфликтов сохранения; dirty — локальное состояние интерфейса.
+Сервер атомарно проверяет ожидаемую revision при сохранении Layout.
+Ошибка / конфликт сохраняют локальные правки; замена dirty-раскладки — с подтверждением.
+При конфликте: загрузить серверную версию или сохранить свою отдельным Layout после выбора.
+endlegend
+@enduml

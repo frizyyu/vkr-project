@@ -1,0 +1,41 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+title Компоненты frontend — проектная декомпозиция Angular
+package "SPA: Angular · TypeScript · Taiga UI" {
+component "Оболочка и навигация\nВход / профиль / язык / тема\nНастройки и уведомления интерфейса" as Shell
+component "Общее состояние\nSignals / RxJS\nактив · таймфрейм · mode\ncutoff · generation · request_id" as State
+component "Рабочая область / раскладки\nviewport · настройки · слои\ndirty · revision · подтверждение замены" as Layout
+component "График\nвыбор актива / таймфрейма\nмасштаб и прокрутка" as Chart
+component "Адаптер графика\nБиблиотека не выбрана" as Adapter
+component "Защищённые авто-слои\nSMC: FVG, OB, ликвидность,\nBOS / CHoCH" as Auto
+component "Редактор пользовательских рисунков\nлинии, лучи, каналы, области, Fibonacci\nтекст, измерение позиции; редактирование\nстили, скрытие, блокировка, группы, удаление" as Draw
+component "Управление replay\nдата · запуск · пауза · шаг · скорость" as Replay
+component "Аналитические разделы\nсигналы · сезонность / скринер\nкалендарь / новости / соцсводки\nрезультаты бэктеста" as Panels
+component "Транспорт и проверка ответа\nREST / WSS; контекст и версии\navailable_at / cutoff / mode\nразрыв → stale + новый снимок" as Transport
+}
+component "Единый серверный API\nКомандная зона, готовые DTO" as API
+Shell --> State
+Layout --> State
+Chart --> State
+Replay --> State
+Panels --> State
+Chart --> Adapter
+Auto --> Adapter
+Draw --> Adapter
+Layout --> Draw
+State --> Transport
+Transport --> API : HTTPS REST / WSS
+note bottom of Transport
+Устаревшие ответы после смены контекста игнорируются.
+Replay: только исторические версии; unavailable без live-подмены.
+Расчёты аналитики и бэктеста выполняются сервером.
+end note
+note bottom of Layout
+Ошибка сохранения оставляет локальные правки dirty.
+Рисунки и авто-разметка разделены по модели и правам редактирования.
+end note
+@enduml
