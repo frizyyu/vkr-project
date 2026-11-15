@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+title Варианты использования — веб-аналитика рынка
+actor "Пользователь" as U
+rectangle "Веб-приложение" {
+usecase "Войти; настроить профиль, язык,\nтему и уведомления интерфейса" as Auth
+usecase "Выбрать XAUUSD / EURUSD / GBPUSD,\nтаймфрейм; масштабировать и прокручивать" as Chart
+usecase "Просмотреть автоматические SMC-слои:\nFVG, OB, ликвидность, BOS / CHoCH" as SMC
+usecase "Создать и редактировать рисунки;\nстили, скрытие, блокировка, группы, удаление" as Draw
+usecase "Сохранить / открыть рабочую область\nи раскладку графика" as Save
+usecase "Воспроизвести историю:\nдата, запуск, пауза, шаг, скорость" as Replay
+usecase "Просмотреть найденные сигналы:\nвход, стоп-лосс, тейк-профит" as Signal
+usecase "Сравнить сезонность по годам,\nсреднюю / медиану; ранжирование,\nскринер и ручная коррекция выбора" as Season
+usecase "Изучить календарь, новости и ссылки,\nсентимент, активность, темы, Long / Short" as News
+usecase "Просмотреть результат бэктеста:\nсделки, метрики, период, ограничения" as Backtest
+}
+U --> Auth
+U --> Chart
+U --> SMC
+U --> Draw
+U --> Save
+U --> Replay
+U --> Signal
+U --> Season
+U --> News
+U --> Backtest
+note bottom of Draw
+Линии, лучи, каналы, области, Fibonacci,
+текст и измерение позиции.
+Рисунки отделены от защищённых SMC-слоёв.
+end note
+note bottom of Replay
+Обычные инструменты графика доступны.
+Только исторические версии available_at ≤ курсор;
+при отсутствии версии — «недоступно», без live-подмены.
+end note
+note bottom of Signal
+Если сигнал не найден — он не обещается.
+Отсутствующие уровни: «не определено», не нуль.
+Решение принимает пользователь; автосделок нет.
+end note
+@enduml

@@ -1,0 +1,42 @@
+@startuml
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 14
+skinparam shadowing false
+hide footbox
+title Историческое воспроизведение — без будущей информации
+actor "Пользователь" as U
+participant "Replay / график" as UI
+participant "Состояние / транспорт" as S
+participant "Серверный API\nединый backend" as API
+U -> UI : Дата, запуск / пауза / шаг / скорость
+UI -> S : Курсор t; mode=replay; generation++
+S -> S : Отсоединить live-поток; очистить чужой контекст
+S -> API : HTTPS REST: актив, таймфрейм, cutoff=t,\nmode=replay, generation, request_id
+API -> API : Проверить доступ; построить снимок на cutoff=t
+note right of API
+Свечи и аналитика — только доступные на t.
+Новости, паттерны, сигналы и сезонность:
+available_at ≤ t, явная историческая версия.
+Поздний перерасчёт не делает результат
+доступным задним числом.
+end note
+API --> S : Исторический снимок; версии; available_at\nили unavailable для отсутствующих частей
+alt Старое поколение / актив / таймфрейм / запрос
+S -> S : Игнорировать ответ
+else mode ≠ replay или cutoff ≠ t
+S -> S : Отклонить ответ; не отображать
+else Есть available_at > t или нет исторической версии
+S -> S : Отклонить несовпавшие данные
+S -> UI : Показать «недоступно» для этой части
+else Ответ согласован
+S -> UI : Показать доступные данные на курсор t
+end
+note over UI,S
+Никакой подмены недоступных данных текущими live-данными.
+Проверки повторяются для каждого нового курсора.
+end note
+U -> UI : Масштаб / прокрутка / рисунки / слои
+UI -> UI : Обычные инструменты доступны и в replay
+U -> UI : Следующий шаг или ход по таймеру
+UI -> S : Новый курсор; новое поколение и запрос
+@enduml

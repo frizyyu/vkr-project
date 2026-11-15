@@ -1,0 +1,113 @@
+@startuml
+!pragma layout smetana
+skinparam defaultFontName SansSerif
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam linetype ortho
+hide circle
+title Аналитические данные — логическая ER-проекция
+entity "Актив (Asset)" as A {
+* asset_id <<PK>>
+--
+символ : XAUUSD / EURUSD / GBPUSD
+}
+entity "Свеча (Candle)" as C {
+* candle_id <<PK>>
+* asset_id <<FK Asset>>
+--
+таймфрейм; время; OHLC; объём?
+}
+entity "Паттерн (Pattern)" as P {
+* pattern_id <<PK>>
+* asset_id <<FK Asset>>
+--
+тип SMC: FVG / OB / ликвидность
+или BOS / CHoCH; время; геометрия
+}
+entity "Сигнал (Signal)" as S {
+* signal_id <<PK>>
+* asset_id <<FK Asset>>
+pattern_id? <<FK Pattern>>
+--
+направление; время
+entry?; SL?; TP?; пояснение
+}
+entity "Новость / событие (NewsEvent)" as N {
+* event_id <<PK>>
+--
+дата; валюты; важность
+forecast?; actual?; сводка; ссылка
+предполагаемое влияние?
+}
+entity "Социальная сводка (SocialSummary)" as SS {
+* summary_id <<PK>>
+* asset_id <<FK Asset>>
+--
+период; текст; источник; ссылка
+темы обсуждений
+}
+entity "Рыночная оценка (MarketEstimate)" as ME {
+* estimate_id <<PK>>
+* asset_id <<FK Asset>>
+event_id? <<FK NewsEvent>>
+--
+тип: сентимент / активность /
+Long-Short / влияние новости
+период; охват; источник; единицы
+значение?; версия; available_at
+}
+entity "Сезонная кривая (SeasonalityCurve)" as SC {
+* curve_id <<PK>>
+* asset_id <<FK Asset>>
+--
+выбор годов; точки наложений
+средняя; медиана; ранжирование
+}
+entity "Запуск скринера (ScreenRun)" as SR {
+* screen_id <<PK>>
+* owner_id <<FK User>>
+--
+параметры; выбранные годы
+результаты по активам / годам
+ручная коррекция выбора
+}
+entity "Запуск бэктеста (BacktestRun)" as B {
+* run_id <<PK>>
+* owner_id <<FK User>>
+* asset_id <<FK Asset>>
+--
+период; параметры; ограничения
+доходность; winrate; drawdown
+PF; средний RR
+}
+entity "Сделка бэктеста (Trade)" as T {
+* trade_id <<PK>>
+* run_id <<FK BacktestRun>>
+--
+время входа / выхода; направление
+цены; результат; RR?
+}
+A ||--o{ C
+A ||--o{ P
+A ||--o{ S
+P |o--o{ S : основание
+A ||--o{ SS
+A ||--o{ ME
+N |o--o{ ME : оценивается
+A ||--o{ SC
+A ||--o{ B
+B ||--o{ T
+SR }o--o{ SC : логический выбор
+N -[hidden]down- SS
+SC -[hidden]down- B
+legend bottom
+Все временные аналитические сущности: revision и available_at; исторические версии неизменяемы.
+mode и cutoff — контекст снимка, а не обязательные поля физической таблицы.
+Источники и период/таймфрейм передаются вместе с данными; охват оценок не смешивается.
+В replay: только историческая версия с available_at ≤ cutoff; иначе unavailable, без live-подмены.
+Связь новостей с активами — фильтрация по валютам / охвату, не выдуманный обязательный FK.
+Результаты скринера и бэктеста — проекция готовых серверных DTO, не реализация расчётов.
+owner_id ссылается на User из ER рабочей области; авторизация запусков — по владельцу.
+Логическая модель данных: физическая БД и окончательные API-контракты ещё не выбраны.
+endlegend
+@enduml
