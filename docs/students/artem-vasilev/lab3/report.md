@@ -6,10 +6,6 @@
 
 **Вклад автора:** проектирование интерфейса, навигации и дизайн-системы; frontend графика, рисунков, рабочих пространств, Replay, сезонности, новостей и результатов алгоритма. Получение данных, детектирование SMC, обучение моделей, расчёт сезонного скринера и бэктестирование относятся к работе команды. Автор проектирует получение и представление их результатов, а не присваивает себе их реализацию.
 
-**Основание:** [условия](https://docs.google.com/document/d/1eUcNd1wMwoVaSu-DSS-cVRgLJvTT6vza/edit), [шаблон](https://github.com/LISA-ITMO/vkr-template-main/blob/main/docs/design/report.md), [порядок сдачи](https://github.com/LISA-ITMO/vkr-template-main/blob/main/course/lab3.md), [ЛР 2](https://github.com/frizyyu/vkr-project/blob/artem-vasilev/docs/students/artem-vasilev/lab2/report.md). Объём уточнён по авторскому перечню «Задачи frontend дипломный проект» и согласованным требованиям: рисунки, Layouts, Replay и сезонный скринер обязательны; сентимент, Long/Short и оценки влияния новостей предоставляет команда.
-
-> Это проектное решение, а не отчёт о готовом приложении. Критерии ниже — план приёмки будущей реализации. Числовые пороги являются предложенными проектными целями, а не результатами измерений. Диаграммы доступны как PNG и редактируемые исходники PlantUML в [assets](assets/).
-
 ## 1. Предметная область и требования
 
 ### Описание предметной области
@@ -275,11 +271,4 @@ UML связывает действия, модули и порядок сооб
 - OMG: [UML 2.5.1](https://www.omg.org/spec/UML/2.5.1/About-UML).
 - Simon Brown: [C4 Container diagram](https://c4model.com/diagrams/container).
 - PlantUML: [Activity](https://plantuml.com/activity-diagram-beta), [Sequence](https://plantuml.com/sequence-diagram), [Information Engineering](https://plantuml.com/ie-diagram).
-
-Исходники и PNG хранятся рядом. Для повторного рендера нужны Java и PlantUML с Smetana; внешние include не используются. Из каталога `lab3`:
-
-```sh
-java -Djava.awt.headless=true -jar /path/to/plantuml.jar -charset UTF-8 -tpng assets/*.puml
-```
-
-На Windows путь к JAR должен быть доступен Java. Для чтения готового отчёта установка PlantUML не нужна.
+- 
